@@ -4,13 +4,81 @@ def validate_data(data):
     if not isinstance(data, dict):
         return False
 
-    if "teams" not in data or "fixture" not in data:
+    if "teams" not in data or "fixtures" not in data:
         return False
 
     if not isinstance(data["teams"], list):
         return False
 
+    if not isinstance(data["fixtures"], list):
+        return False
+
     return True
+
+def validate_teams(teams):
+    for team in teams:
+        if not isinstance(team, dict):
+            return False
+
+        if "id" not in team or "name" not in team:
+            return False
+
+        if not isinstance(team["id"], str):
+            return False
+
+        if not isinstance(team["name"], str):
+            return False
+        
+
+        return True
+
+def validate_fixtures(fixtures):
+
+    for fixture in fixtures:
+
+        if not isinstance(fixture, dict):
+            return False
+
+        required_keys = [
+            "id",
+            "home_id",
+            "away_id",
+            "status",
+            "home_score",
+            "away_score",
+        ]
+
+        for key in required_keys:
+            if key not in fixture:
+                return False
+
+            if not isinstance(fixture["id"], str):
+                return
+
+            if not isinstance(fixture["home_id"], str):
+                return False
+
+            if not isinstance(fixture["away_id"], str):
+                return False
+
+            if fixture["status"] not in ["pending", "completed"]:
+                return False
+
+            if fixture["status"] == "pending":
+                if fixture["home_score"] is not None or fixture["away_score"] is not None:
+                    return False
+
+                if fixture["status"] == "completed":
+                    if not isinstance(fixture["home_score"], int):
+                        return False
+
+                    if not isinstance(fixture["away_score"], int):
+                        return False
+
+                    if fixture["home_score"] < 0 or fixture["away_score"] < 0:
+                        return False
+
+        return True
 
 def save_data(teams, fixtures):
     data = {
@@ -32,3 +100,17 @@ def load_data():
 
     except FileNotFoundError:
         return [], []
+
+if __name__ == "__main__":
+    valid_data = {
+        "teams": [],
+        "fixtures": []
+    }
+
+    invalid_data = {
+        "teams": "Real Madrid",
+        "fixtures": []
+    }
+
+    print(validate_data(valid_data))
+    print(validate_data(invalid_data))
