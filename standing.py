@@ -66,7 +66,14 @@ def calculate_standings(teams: list, fixtures: list):
     for team in standings:
         team["gd"] = team["gf"] - team["ga"]
 
-    standings.sort(key=lambda team: team["points"], reverse=True)
+    standings.sort(
+        key=lambda team: (
+            team["points"],
+            team["gd"],
+            team["gf"]
+        ),
+        reverse=True
+    )
 
 
     return standings
@@ -113,3 +120,4 @@ def display_standings(teams: list, standings: list):
         )
 
     print("⚽===================================================⚽")
+

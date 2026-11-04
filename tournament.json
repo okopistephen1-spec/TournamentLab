@@ -1,0 +1,70 @@
+{
+    "teams": [
+        {
+            "id": "TM001",
+            "name": "Real Madrid"
+        },
+        {
+            "id": "TM002",
+            "name": "Barcelona"
+        },
+        {
+            "id": "TM003",
+            "name": "Chelsea"
+        },
+        {
+            "id": "TM004",
+            "name": "Liverpool"
+        }
+    ],
+    "fixtures": [
+        {
+            "id": "M001",
+            "home_id": "TM001",
+            "away_id": "TM002",
+            "status": "completed",
+            "home_score": 4,
+            "away_score": 2
+        },
+        {
+            "id": "M002",
+            "home_id": "TM001",
+            "away_id": "TM003",
+            "status": "pending",
+            "home_score": null,
+            "away_score": null
+        },
+        {
+            "id": "M003",
+            "home_id": "TM001",
+            "away_id": "TM004",
+            "status": "pending",
+            "home_score": null,
+            "away_score": null
+        },
+        {
+            "id": "M004",
+            "home_id": "TM002",
+            "away_id": "TM003",
+            "status": "pending",
+            "home_score": null,
+            "away_score": null
+        },
+        {
+            "id": "M005",
+            "home_id": "TM002",
+            "away_id": "TM004",
+            "status": "pending",
+            "home_score": null,
+            "away_score": null
+        },
+        {
+            "id": "M006",
+            "home_id": "TM003",
+            "away_id": "TM004",
+            "status": "pending",
+            "home_score": null,
+            "away_score": null
+        }
+    ]
+}

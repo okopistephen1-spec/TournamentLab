@@ -27,7 +27,7 @@ def register_team(teams: list, name: str):
 
     teams.append(new_team)
 
-    return f"Team registered successfully! ID: {team_id}"
+    return f"Team is registered successfully! ID: {team_id}"
 
 def list_teams(teams: list):
     if not teams:
