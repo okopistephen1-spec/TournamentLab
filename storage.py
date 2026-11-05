@@ -7,6 +7,12 @@ def validate_data(data):
     if "teams" not in data or "fixtures" not in data:
         return False
 
+    if type(data.get("schema_version")) is not int:
+        return False
+
+    if data["schema_version"] != 1:
+        return False
+
     if not isinstance(data["teams"], list):
         return False
 
@@ -16,12 +22,15 @@ def validate_data(data):
     if not validate_teams(data["teams"]):
         return False
 
-    if not validate_fixtures(data["fixtures"]):
+    if not validate_fixtures(data["fixtures"], data["teams"]):
         return False
 
     return True
 
 def validate_teams(teams):
+    team_ids = set()
+    team_names = set()
+
     for team in teams:
         if not isinstance(team, dict):
             return False
@@ -29,16 +38,37 @@ def validate_teams(teams):
         if "id" not in team or "name" not in team:
             return False
 
-        if not isinstance(team["id"], str):
+        team_id = team["id"]
+        team_name = team["name"]
+
+        if not isinstance(team_id, str):
             return False
 
-        if not isinstance(team["name"], str):
+        if not isinstance(team_name, str):
             return False
-        
+
+        if not team_id.strip():
+            return False
+
+        if not 2 <= len(team_name.strip()) <= 30:
+            return False
+
+        correct_name = team_name.strip().casefold()
+
+        if team_id in team_ids:
+            return False
+
+        if correct_name in team_names:
+            return False
+
+        team_ids.add(team_id)
+        team_names.add(correct_name)
 
     return True
 
-def validate_fixtures(fixtures):
+def validate_fixtures(fixtures, teams):
+    team_ids = {team["id"] for team in teams}
+    fixture_ids = set()
 
     for fixture in fixtures:
 
@@ -51,45 +81,64 @@ def validate_fixtures(fixtures):
             "away_id",
             "status",
             "home_score",
-            "away_score",
+            "away_score"
         ]
 
         for key in required_keys:
             if key not in fixture:
                 return False
 
-            if not isinstance(fixture["id"], str):
+        fixture_id = fixture["id"]
+        home_id = fixture["home_id"]
+        away_id = fixture["away_id"]
+
+       
+        if not isinstance(fixture_id, str) or not fixture_id.strip():
+            return False
+
+        if fixture_id in fixture_ids:
+            return False
+
+        fixture_ids.add(fixture_id)
+
+        
+        if home_id not in team_ids or away_id not in team_ids:
+            return False
+
+        
+        if home_id == away_id:
+            return False
+
+        
+        if fixture["status"] not in ["pending", "completed"]:
+            return False
+
+       
+        if fixture["status"] == "pending":
+            if fixture["home_score"] is not None:
                 return False
 
-            if not isinstance(fixture["home_id"], str):
+            if fixture["away_score"] is not None:
                 return False
 
-            if not isinstance(fixture["away_id"], str):
+        
+        elif fixture["status"] == "completed":
+            home_score = fixture["home_score"]
+            away_score = fixture["away_score"]
+
+            if type(home_score) is not int or type(away_score) is not int:
                 return False
 
-            if fixture["status"] not in ["pending", "completed"]:
+            if home_score < 0 or away_score < 0:
                 return False
 
-            if fixture["status"] == "pending":
-                if fixture["home_score"] is not None or fixture["away_score"] is not None:
-                    return False
-
-            if fixture["status"] == "completed":
-                if not isinstance(fixture["home_score"], int):
-                    return False
-
-                if not isinstance(fixture["away_score"], int):
-                    return False
-
-                if fixture["home_score"] < 0 or fixture["away_score"] < 0:
-                    return False
-
-        return True
+    return True
 
 def save_data(teams, fixtures):
     data = {
+        "schema_version": 1,
         "teams": teams,
-        "fixtures": fixtures
+        "fixtures": fixtures,
     }
 
     with open("tournament.json", "w") as file:
