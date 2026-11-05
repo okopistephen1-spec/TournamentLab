@@ -69,6 +69,7 @@ def validate_teams(teams):
 def validate_fixtures(fixtures, teams):
     team_ids = {team["id"] for team in teams}
     fixture_ids = set()
+    fixture_pairs = set()
 
     for fixture in fixtures:
 
@@ -91,6 +92,12 @@ def validate_fixtures(fixtures, teams):
         fixture_id = fixture["id"]
         home_id = fixture["home_id"]
         away_id = fixture["away_id"]
+        pair = frozenset((home_id, away_id))
+
+        if pair in fixture_pairs:
+            return False
+
+        fixture_pairs.add(pair)
 
        
         if not isinstance(fixture_id, str) or not fixture_id.strip():
