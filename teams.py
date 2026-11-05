@@ -39,4 +39,4 @@ def list_teams(teams: list):
     for index, team in enumerate(teams, start=1):
         print(f"{index}. {team['name']} | ID: {team['id']}")
 
-    print("======================================")
+    print("=" * 35)

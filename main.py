@@ -5,7 +5,12 @@ from standing import calculate_standings, display_standings
 from storage import save_data, load_data
 
 
-teams, fixtures = load_data()
+teams, fixtures,data_loaded = load_data()
+
+if not data_loaded:
+    print("Tournament data couldn't be loaded")
+    print("Please check your json file(tournament.json)")
+    exit()
 
 while True:
     print("\n--------------------\nTOURNAMENTLAB\n--------------------\n")

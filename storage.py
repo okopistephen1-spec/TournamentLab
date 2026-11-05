@@ -13,6 +13,12 @@ def validate_data(data):
     if not isinstance(data["fixtures"], list):
         return False
 
+    if not validate_teams(data["teams"]):
+        return False
+
+    if not validate_fixtures(data["fixtures"]):
+        return False
+
     return True
 
 def validate_teams(teams):
@@ -30,7 +36,7 @@ def validate_teams(teams):
             return False
         
 
-        return True
+    return True
 
 def validate_fixtures(fixtures):
 
@@ -53,7 +59,7 @@ def validate_fixtures(fixtures):
                 return False
 
             if not isinstance(fixture["id"], str):
-                return
+                return False
 
             if not isinstance(fixture["home_id"], str):
                 return False
@@ -68,15 +74,15 @@ def validate_fixtures(fixtures):
                 if fixture["home_score"] is not None or fixture["away_score"] is not None:
                     return False
 
-                if fixture["status"] == "completed":
-                    if not isinstance(fixture["home_score"], int):
-                        return False
+            if fixture["status"] == "completed":
+                if not isinstance(fixture["home_score"], int):
+                    return False
 
-                    if not isinstance(fixture["away_score"], int):
-                        return False
+                if not isinstance(fixture["away_score"], int):
+                    return False
 
-                    if fixture["home_score"] < 0 or fixture["away_score"] < 0:
-                        return False
+                if fixture["home_score"] < 0 or fixture["away_score"] < 0:
+                    return False
 
         return True
 
@@ -96,21 +102,15 @@ def load_data():
         with open("tournament.json", "r") as file:
             data = json.load(file)
         
-        return data["teams"], data["fixtures"]
+        if not validate_data(data):
+            print("Invalid tournament data")
+            return [], [], False
+
+        return data["teams"], data["fixtures"], True
 
     except FileNotFoundError:
-        return [], []
+        return [], [], True
 
-if __name__ == "__main__":
-    valid_data = {
-        "teams": [],
-        "fixtures": []
-    }
-
-    invalid_data = {
-        "teams": "Real Madrid",
-        "fixtures": []
-    }
-
-    print(validate_data(valid_data))
-    print(validate_data(invalid_data))
+    except json.JSONDecodeError:
+        print("Error: tournament.json contains invalid json")
+        return [], [], False
